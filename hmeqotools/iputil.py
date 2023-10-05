@@ -1,6 +1,8 @@
 from __future__ import annotations
+import os
 import socket
 from collections import defaultdict
+import sys
 from typing import Any
 
 import requests
@@ -8,11 +10,26 @@ import requests
 
 def get_local_ip() -> str:
     """Get local IP address."""
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(('8.8.8.8', 80))
-    local_ip = s.getsockname()[0]
-    s.close()
-    return local_ip
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+            sock.connect(('8.8.8.8', 80))
+            return sock.getsockname()[0]
+    except socket.error:
+        return socket.gethostbyname(socket.gethostname())
+
+
+if sys.platform == 'win32':
+    def get_local_ip2() -> tuple[str, str]:
+        """Get local IP address, return (ipv4, ipv6)."""
+        output = [line for line in os.popen('ipconfig')]
+        ipv4 = ''
+        ipv6 = ''
+        for i, line in enumerate(output):
+            if 'IPv4' in line and output[i+2][-2] != ' ':
+                ipv4 = line[line.find(':') + 2:-1]
+            elif 'IPv6' in line and output[i+3][-2] != ' ':
+                ipv6 = line[line.find(':') + 2:-1]
+        return ipv4, ipv6
 
 
 def get_public_ip() -> str:
