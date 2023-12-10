@@ -6,11 +6,11 @@ from operator import add, mod, mul, pow, sub, truediv
 from typing import Callable
 
 
-class Sign:
+class Symbol:
     pass
 
 
-class Operator(Sign):
+class Operator(Symbol):
     def __init__(self, op: Convertor, count=2, priority=1):
         self.op = op
         self.count = count
@@ -27,7 +27,7 @@ class Operator(Sign):
     __repr__ = __str__
 
 
-class Bracket(Sign):
+class Bracket(Symbol):
     def __init__(self, pair: str | None = None, is_head=False):
         self.pair = pair
         self.is_head = is_head
@@ -40,37 +40,32 @@ class Bracket(Sign):
 
 Convertor = Callable[..., Decimal]
 
-signs: dict[str | re.Pattern, Convertor | Operator | Bracket] = {
-    re.compile(r'-?\d+(\.\d+)?'): Decimal,
-    '+': Operator(add),
-    '-': Operator(sub),
-    '*': Operator(mul, priority=2),
-    'x': Operator(mul, priority=2),
-    '/': Operator(truediv, priority=2),
-    '÷': Operator(truediv, priority=2),
-    '%': Operator(mod, priority=2),
-    'mod': Operator(mod, priority=2),
-    '^': Operator(pow, priority=3),
-    '(': Bracket('()', is_head=True),
-    ')': Bracket('()'),
-    '[': Bracket('[]', is_head=True),
-    ']': Bracket('[]'),
+symbols: dict[re.Pattern, Convertor | Operator | Bracket] = {
+    re.compile(r'(?<!\d)(\+|-)?\d+(\.\d+)?'): Decimal,
+    re.compile(r'\+'): Operator(add),
+    re.compile(r'-'): Operator(sub),
+    re.compile(r'\*'): Operator(mul, priority=2),
+    re.compile(r'x'): Operator(mul, priority=2),
+    re.compile(r'/'): Operator(truediv, priority=2),
+    re.compile(r'÷'): Operator(truediv, priority=2),
+    re.compile(r'%'): Operator(mod, priority=2),
+    re.compile(r'mod'): Operator(mod, priority=2),
+    re.compile(r'^'): Operator(pow, priority=3),
+    re.compile(r'\('): Bracket('()', is_head=True),
+    re.compile(r'\)'): Bracket('()'),
+    re.compile(r'\['): Bracket('[]', is_head=True),
+    re.compile(r'\]'): Bracket('[]'),
 }
 
 
-def parse_sign(expression: str):
+def parse_symbol(expression: str, pos: int):
     """解析表达式并返回解析后的结果"""
-    for pattern, op in signs.items():
-        if isinstance(pattern, str):
-            if not expression.startswith(pattern):
-                continue
-            return op, len(pattern)
-        else:
-            span = pattern.match(expression)
-            if span is None:
-                continue
-            return op, span.end()
-    raise ValueError("不支持的符号")
+    for pattern, op in symbols.items():
+        span = pattern.match(expression, pos=pos)
+        if span is None:
+            continue
+        return op, span
+    raise ValueError("不支持的符号 %r" % expression[pos])
 
 
 def calc(expression: str) -> Decimal:
@@ -81,27 +76,28 @@ def preprocess(expression: str) -> list[Decimal | Operator]:
     stack: list[Operator | Bracket] = []
     preprocessed: list[Decimal | Operator] = []
 
-    expression.strip()
-    while expression:
-        sign, length = parse_sign(expression)
-        if not isinstance(sign, Sign):
-            preprocessed.append(sign(expression[:length]))
-        elif isinstance(sign, Operator):
-            while stack and isinstance(stack[-1], Operator) and stack[-1].priority >= sign.priority:
+    expression = expression.replace(' ', '')
+    pos = 0
+    while pos < len(expression):
+        symbol, span = parse_symbol(expression, pos)
+        if not isinstance(symbol, Symbol):
+            preprocessed.append(symbol(expression[span.start():span.end()]))
+        elif isinstance(symbol, Operator):
+            while stack and isinstance(stack[-1], Operator) and stack[-1].priority >= symbol.priority:
                 preprocessed.append(stack[-1])
                 del stack[-1]
-            stack.append(sign)
+            stack.append(symbol)
         else:
-            if sign.is_head:
-                stack.append(sign)
+            if symbol.is_head:
+                stack.append(symbol)
             else:
                 while isinstance(stack[-1], Operator):
                     preprocessed.append(stack[-1])
                     del stack[-1]
-                if isinstance(stack[-1], Bracket) and stack[-1].pair != sign.pair:
-                    raise ValueError("不匹配的括号")
+                if isinstance(stack[-1], Bracket) and stack[-1].pair != symbol.pair:
+                    raise ValueError("不匹配的括号 %r" % symbol.pair)
                 del stack[-1]
-        expression = expression[length:].strip()
+        pos = span.end()
 
     preprocessed.extend(reversed([i for i in stack if isinstance(i, Operator)]))
     return preprocessed
@@ -125,7 +121,7 @@ def calc_preprocessed(preprocessed: list[Decimal | Operator]):
 
 
 def main():
-    result = calc("1 + (0.1 + 0.2) * 3 / 3")
+    result = calc("1 + (6 + 2) * 3")
     print(result)
 
 
