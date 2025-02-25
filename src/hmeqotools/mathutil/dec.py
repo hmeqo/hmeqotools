@@ -33,7 +33,7 @@ def floatable(s: str):
     index = s.find(".")
     if index in (-1, 0, len(s) - 1):
         return False
-    s = s[:index] + s[index + 1:]
+    s = s[:index] + s[index + 1 :]
     return s.isdecimal()
 
 
@@ -50,7 +50,7 @@ def convert_sn(str_num: str):
     a = re.search(r"[eE]", str_num)
     if a:
         a = a.start()
-        str_num_list = [str_num[:a], int(str_num[a + 1:])]
+        str_num_list = [str_num[:a], int(str_num[a + 1 :])]
         dp = StrDecs(str_num_list[0])
         if str_num_list[1] < 0:
             a = abs(str_num_list[1])
@@ -61,7 +61,7 @@ def convert_sn(str_num: str):
             a = abs(str_num_list[1]) - dp.dp
             str_num = dp.floats2ints(str_num_list[0])
             if a > 0:
-                str_num += '0' * a
+                str_num += "0" * a
                 dp.dp = 0
             elif a < 0:
                 dp.dp = abs(a)
@@ -75,7 +75,7 @@ if hasattr(_sys, "get_int_max_str_digits"):
         if isinstance(obj, str):
             result = 0
             for char in obj:
-                result = (result*10) + ord(char) - 48
+                result = (result * 10) + ord(char) - 48
             return result
         return int(obj)
 
@@ -87,7 +87,7 @@ if hasattr(_sys, "get_int_max_str_digits"):
         return "".join(reversed(result))
 
 else:
-    str2int = int
+    str2int = int  # type: ignore
     int2str = str
 
 
@@ -103,7 +103,7 @@ class StrDecs:
     @staticmethod
     def get_dp(s: str):
         """一个字符数字串的最大小数位数"""
-        index = s.find('.')
+        index = s.find(".")
         return 0 if index == -1 else len(s) - 1 - index
 
     @staticmethod
@@ -121,20 +121,20 @@ class StrDecs:
     def floats2ints(self, s: str):
         """小数字符串转换成整数字符串, 小数部分长度至少大于等于 `self.dp`"""
         if self.dp:
-            a = s.find('.')
+            a = s.find(".")
             if a == -1:
-                return s.ljust(len(s) + self.dp, '0')
+                return s.ljust(len(s) + self.dp, "0")
             else:
-                return s.ljust(self.dp + a + 1, '0').replace('.', '', 1)
+                return s.ljust(self.dp + a + 1, "0").replace(".", "", 1)
         return s
 
     def ints2floats(self, s: str):
         """整数字符串转换回小数字符串."""
         if self.dp:
             s = s.zfill(self.dp + (2 if s[0] in "-+" else 1))
-            sl = (s[:-self.dp], s[-self.dp:])
+            sl = (s[: -self.dp], s[-self.dp :])
             if int(sl[1]):
-                return '.'.join(sl)
+                return ".".join(sl)
             return sl[0]
         return s
 
@@ -161,14 +161,14 @@ class Decimal:
     def __repr__(self):
         # 保留 n 位数字
         n = 16
-        ss = self.__str__()[:n + 3]
+        ss = self.__str__()[: n + 3]
         sign = "" if ss[0].isdecimal() else ss[0]
         # 数字和小数点
         d = ss[1:] if sign else ss
         # 数字个数大于 n
         if len(d.replace(".", "", 1)) > n:
             if "." in d:
-                d = d[:n + 1]
+                d = d[: n + 1]
                 # 如果小数点在末尾，省去小数点
                 if d[-1] == ".":
                     d = d[:n]
@@ -181,7 +181,7 @@ class Decimal:
     def __str__(self):
         integer, decimals = self.separate()
         if self.display_precision is not None:
-            decimals = decimals[:self.display_precision]
+            decimals = decimals[: self.display_precision]
         if self.n < 0:
             integer = "-" + integer
         if any(i != "0" for i in decimals):
@@ -220,7 +220,7 @@ class Decimal:
 
     def __divmod__(self, other):
         div = self // other
-        return div, self - div*other
+        return div, self - div * other
 
     def __add__(self, other):
         if isinstance(other, self.__class__):
@@ -309,7 +309,7 @@ class Decimal:
         raise TypeError()
 
     def __mod__(self, other):
-        return self - (self//other) * other
+        return self - (self // other) * other
 
     def __pow__(self, power, modulus=None):
         if isinstance(power, self.__class__):
@@ -323,14 +323,14 @@ class Decimal:
                 p_dec = _fractions.Fraction(p_dec)
                 # 如果底数是负数，指数是小数
                 if new < 0 and p_dec:
-                    return complex(new)**complex(p_dec)
+                    return complex(new) ** complex(p_dec)
                 n = new.copy()
                 # 计算整数部分
                 if p_int:
                     n **= p_int
                 # 计算小数部分
                 if p_dec:
-                    dms = new.root(p_dec.denominator)**p_dec.numerator
+                    dms = new.root(p_dec.denominator) ** p_dec.numerator
                     # 整数部分不为 0
                     if p_int:
                         n *= dms
@@ -351,12 +351,12 @@ class Decimal:
                     new = 1 / new
                     power = abs(power)
                 if power > 1:
-                    new.n = new.n**power // new.one**(power - 1)
+                    new.n = new.n**power // new.one ** (power - 1)
             else:
                 new.n = new.one
             return new if modulus is None else new % modulus
         elif power_type is float:
-            return self**self.from_float(power)
+            return self ** self.from_float(power)
         raise TypeError()
 
     def __radd__(self, other):
@@ -414,14 +414,14 @@ class Decimal:
         raise TypeError()
 
     def __rmod__(self, other):
-        return other - (other//self) * self
+        return other - (other // self) * self
 
     def __rpow__(self, other):
         other_type = type(other)
         if other_type is int or other_type is bool:
-            return self.convert_int(other)**self
+            return self.convert_int(other) ** self
         elif other_type is float:
-            return self.convert_float(other)**self
+            return self.convert_float(other) ** self
         raise TypeError()
 
     def __eq__(self, other):
@@ -523,7 +523,7 @@ class Decimal:
         """将与另一个此类型对象合并成一个新对象."""
         new = self.copy()
         if obj.dp > new.dp:
-            new.n *= 10**(obj.dp - new.dp)
+            new.n *= 10 ** (obj.dp - new.dp)
             new.one = obj.one
             new.dp = obj.dp
         return new

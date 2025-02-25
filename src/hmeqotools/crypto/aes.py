@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import base64
 import os
 
@@ -8,6 +10,8 @@ from hmeqotools.crypto.padding import *
 
 
 class AES(Cipher):
+    modes = modes
+
     block_size = 16
 
     def __init__(self, key: bytes, mode: modes.Mode, block_size=block_size):
@@ -50,7 +54,7 @@ class AES(Cipher):
 def main():
     key = b"1234567890123456"
     # key = AES.generate_key()
-    aes = AES(key, modes.ECB())
+    aes = AES(key, AES.modes.ECB())
     a = aes.encrypt(b"123")
     b = aes.decrypt(a)
     print(a, b)

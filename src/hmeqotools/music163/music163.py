@@ -79,6 +79,7 @@ class ReqAlbumArt(NoHtmlRequests):
 
 class ReqLyric(Requests):
     """歌词"""
+
     method = "post"
     url = "https://music.163.com/weapi/song/lyric?csrf_token="
     data = {

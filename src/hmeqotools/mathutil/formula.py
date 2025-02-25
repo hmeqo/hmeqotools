@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 import multiprocessing
 import os
@@ -28,12 +30,12 @@ def _sort_list(lst, count, si=0):
     lst_len = len(lst)
     sort_len = lst_len - si
     if sort_len > 2:
-        sort_len = lst_len - lst_len%count
+        sort_len = lst_len - lst_len % count
         mid_index = sort_len // 2
-        mid_index = mid_index - mid_index%count + si
+        mid_index = mid_index - mid_index % count + si
         sort_len += si
         for i, i2 in zip(range(si, mid_index, count * 2), range(sort_len, mid_index + 1, -count * 2)):
-            lst[i:i + count], lst[i2 - count:i2] = lst[i2 - count:i2], lst[i:i + count]
+            lst[i : i + count], lst[i2 - count : i2] = lst[i2 - count : i2], lst[i : i + count]
 
 
 class Pi:
@@ -54,7 +56,7 @@ class Pi:
         for i in range(3, n, 2):
             x1 //= s1
             x2 //= s2
-            x = (x1+x2) // i
+            x = (x1 + x2) // i
             if x == 0:
                 break
             result += x
@@ -70,9 +72,8 @@ class Pi:
         """
         cpu_count = os.cpu_count()
         assert isinstance(cpu_count, int)
-        with (
-            multiprocessing.Pool(processes=cpu_count) as pool,
-            Progress(
+        with multiprocessing.Pool(processes=cpu_count) as pool:
+            with Progress(
                 SpinnerColumn(),
                 *Progress.get_default_columns()[:-1],
                 MofNCompleteColumn(),
@@ -80,58 +81,58 @@ class Pi:
                 TimeRemainingColumn(),
                 console=console,
                 transient=False,
-            ) as progress,
-        ):
-            task1 = progress.add_task("Ramanujan", total=None)
-            task2 = progress.add_task("Ramanujan", total=1, start=False)
-            valid_digits = 14
-            if is_prec:
-                iter_count = n / valid_digits
-                if iter_count % 1:
-                    iter_count += 1
-                iter_count = int(iter_count)
-            else:
-                iter_count = n
-            prec = valid_digits * iter_count
-            progress.update(task1, total=iter_count)
+            ) as progress:
+                task1 = progress.add_task("Ramanujan", total=None)
+                task2 = progress.add_task("Ramanujan", total=1, start=False)
+                valid_digits = 14
+                if is_prec:
+                    iter_count = n / valid_digits
+                    if iter_count % 1:
+                        iter_count += 1
+                    iter_count = int(iter_count)
+                else:
+                    iter_count = n
+                prec = valid_digits * iter_count
+                progress.update(task1, total=iter_count)
 
-            result = dec.Decimal(0, 0, prec + cls.k)
-            count = 4 * cpu_count
+                result = dec.Decimal(0, 0, prec + cls.k)
+                count = 4 * cpu_count
 
-            if space_for_time:
-                ftrs = [i for i in mfn.factorial_gen(6 * iter_count)]
-                params = [(i, result, (ftrs[i], ftrs[3 * i], ftrs[6 * i])) for i in range(iter_count)]
-                del ftrs
-                # 对参数排序，使进度条过渡更平滑
-                _sort_list(params, cpu_count)
-                while params:
-                    result += sum(pool.map(cls._ramanujan2, params[:count]))
-                    progress.update(task1, advance=len(params[:count]))
-                    del params[:count]
-            else:
-                params = [(i, result) for i in range(iter_count)]
-                _sort_list(params, cpu_count)
-                while params:
-                    result += sum(pool.map(cls._ramanujan, params[:count]))
-                    progress.update(task1, advance=len(params[:count]))
-                    del params[:count]
+                if space_for_time:
+                    ftrs = [i for i in mfn.factorial_gen(6 * iter_count)]
+                    params = [(i, result, (ftrs[i], ftrs[3 * i], ftrs[6 * i])) for i in range(iter_count)]
+                    del ftrs
+                    # 对参数排序，使进度条过渡更平滑
+                    _sort_list(params, cpu_count)
+                    while params:
+                        result += sum(pool.map(cls._ramanujan2, params[:count]))
+                        progress.update(task1, advance=len(params[:count]))
+                        del params[:count]
+                else:
+                    params = [(i, result) for i in range(iter_count)]
+                    _sort_list(params, cpu_count)
+                    while params:
+                        result += sum(pool.map(cls._ramanujan, params[:count]))
+                        progress.update(task1, advance=len(params[:count]))
+                        del params[:count]
 
-            progress.start_task(task2)
-            result = 426880 * result.convert_int(10005).root(2) / result
-            result = result.n // 10**(result.dp - (n if is_prec else prec))
-            progress.update(task2, completed=1)
+                progress.start_task(task2)
+                result = 426880 * result.convert_int(10005).root(2) / result
+                result = result.n // 10 ** (result.dp - (n if is_prec else prec))
+                progress.update(task2, completed=1)
         return result
 
     @staticmethod
     def _ramanujan(k):
         k, dec_ = k
-        return dec_.convert_int(math.factorial(6 * k) * (13591409 + 545140134*k)
-                               ) / (math.factorial(3 * k) * math.factorial(k)**3 * (-640320)**(3 * k))
+        return dec_.convert_int(math.factorial(6 * k) * (13591409 + 545140134 * k)) / (
+            math.factorial(3 * k) * math.factorial(k) ** 3 * (-640320) ** (3 * k)
+        )
 
     @staticmethod
     def _ramanujan2(k):
         k, dec_, ftrs = k
-        return dec_.convert_int(ftrs[2] * (13591409 + 545140134*k)) / (ftrs[1] * ftrs[0]**3 * (-640320)**(3 * k))
+        return dec_.convert_int(ftrs[2] * (13591409 + 545140134 * k)) / (ftrs[1] * ftrs[0] ** 3 * (-640320) ** (3 * k))
 
     @classmethod
     def machin(cls, precision=16) -> int:
@@ -172,7 +173,7 @@ class Pi:
                 # 求每个含1/239的项及符号
                 x2 //= s2
                 # 求两项之和
-                x = (x1+x2) // i
+                x = (x1 + x2) // i
                 if x == 0:
                     break
                 # 求总和
@@ -222,9 +223,8 @@ class E:
 
         cpu_count = os.cpu_count()
         assert isinstance(cpu_count, int)
-        with (
-            multiprocessing.Pool(processes=cpu_count) as pool,
-            Progress(
+        with multiprocessing.Pool(processes=cpu_count) as pool:
+            with Progress(
                 SpinnerColumn(),
                 *Progress.get_default_columns()[:-1],
                 MofNCompleteColumn(),
@@ -232,21 +232,20 @@ class E:
                 TimeRemainingColumn(),
                 console=console,
                 transient=False,
-            ) as progress,
-        ):
-            task1 = progress.add_task("Taylor", total=None)
-            result = dec.Decimal(0, 0, p1)
-            one = result.convert_int(1)
-            count = 64 * cpu_count
+            ) as progress:
+                task1 = progress.add_task("Taylor", total=None)
+                result = dec.Decimal(0, 0, p1)
+                one = result.convert_int(1)
+                count = 64 * cpu_count
 
-            params = [(one, i) for i in mfn.factorial_gen(p2)]
-            _sort_list(params, count)
-            progress.update(task1, total=len(params))
-            while params:
-                result += sum(pool.map(cls._taylor, params[:count]))
-                progress.update(task1, advance=len(params[:count]))
-                del params[:count]
-        return result.n // 10**(result.dp - precision)
+                params = [(one, i) for i in mfn.factorial_gen(p2)]
+                _sort_list(params, count)
+                progress.update(task1, total=len(params))
+                while params:
+                    result += sum(pool.map(cls._taylor, params[:count]))
+                    progress.update(task1, advance=len(params[:count]))
+                    del params[:count]
+        return result.n // 10 ** (result.dp - precision)
 
     @staticmethod
     def _taylor(k):
