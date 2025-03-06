@@ -32,29 +32,26 @@ from typing import Any, Callable, Literal, Protocol, TypeVar, overload
 
 GLOBAL_LOCK = threading.RLock()
 
-AnyFunc = TypeVar('AnyFunc', bound=Callable)
+AnyFunc = TypeVar("AnyFunc", bound=Callable)
 
 
 class LockProtocol(Protocol):
-    def acquire(self, blocking=True, timeout=-1) -> bool | Literal[1]:
-        ...
+    def acquire(self, blocking=True, timeout=-1) -> bool | Literal[1]: ...
 
-    def release(self) -> None:
-        ...
+    def release(self) -> None: ...
 
 
 @overload
-def lock_required(func: AnyFunc, lock: LockProtocol = GLOBAL_LOCK) -> AnyFunc:
-    ...
+def lock_required(func: AnyFunc, lock: LockProtocol = GLOBAL_LOCK) -> AnyFunc: ...
 
 
 @overload
-def lock_required(func=None, lock: LockProtocol = GLOBAL_LOCK) -> Callable[[AnyFunc], AnyFunc]:
-    ...
+def lock_required(func=None, lock: LockProtocol = GLOBAL_LOCK) -> Callable[[AnyFunc], AnyFunc]: ...
 
 
-def lock_required(func: AnyFunc | None = None,
-                  lock: LockProtocol = GLOBAL_LOCK) -> AnyFunc | Callable[[AnyFunc], AnyFunc]:
+def lock_required(
+    func: AnyFunc | None = None, lock: LockProtocol = GLOBAL_LOCK
+) -> AnyFunc | Callable[[AnyFunc], AnyFunc]:
     if func is None:
 
         def get_func(__func: AnyFunc):

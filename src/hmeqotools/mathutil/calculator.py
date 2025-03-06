@@ -17,7 +17,7 @@ class Operator(Symbol):
         self.priority = priority
 
     def __str__(self) -> str:
-        return f'{self.__class__.__name__}({self.op.__name__}, priority={self.priority})'
+        return f"{self.__class__.__name__}({self.op.__name__}, priority={self.priority})"
 
     def calc(self, *args: Decimal):
         if len(args) != self.count:
@@ -33,7 +33,7 @@ class Bracket(Symbol):
         self.is_head = is_head
 
     def __str__(self) -> str:
-        return f'{self.__class__.__name__}(pair={repr(self.pair)})'
+        return f"{self.__class__.__name__}(pair={repr(self.pair)})"
 
     __repr__ = __str__
 
@@ -41,27 +41,31 @@ class Bracket(Symbol):
 Convertor = Callable[..., Decimal]
 
 symbols: dict[re.Pattern, Convertor | Operator | Bracket] = {
-    re.compile(r'(?<!\d)(\+|-)?\d+(\.\d+)?'): Decimal,
-    re.compile(r'\+'): Operator(add),
-    re.compile(r'-'): Operator(sub),
-    re.compile(r'\*'): Operator(mul, priority=2),
-    re.compile(r'x'): Operator(mul, priority=2),
-    re.compile(r'/'): Operator(truediv, priority=2),
-    re.compile(r'÷'): Operator(truediv, priority=2),
-    re.compile(r'%'): Operator(mod, priority=2),
-    re.compile(r'mod'): Operator(mod, priority=2),
-    re.compile(r'^'): Operator(pow, priority=3),
-    re.compile(r'\('): Bracket('()', is_head=True),
-    re.compile(r'\)'): Bracket('()'),
-    re.compile(r'\['): Bracket('[]', is_head=True),
-    re.compile(r'\]'): Bracket('[]'),
+    re.compile(r"(?<!\d)(\+|-)?\d+(\.\d+)?"): Decimal,
+    re.compile(r"\+"): Operator(add),
+    re.compile(r"-"): Operator(sub),
+    re.compile(r"\*"): Operator(mul, priority=2),
+    re.compile(r"x"): Operator(mul, priority=2),
+    re.compile(r"/"): Operator(truediv, priority=2),
+    re.compile(r"÷"): Operator(truediv, priority=2),
+    re.compile(r"%"): Operator(mod, priority=2),
+    re.compile(r"mod"): Operator(mod, priority=2),
+    re.compile(r"\^"): Operator(pow, priority=3),
+    re.compile(r"\*\*"): Operator(pow, priority=3),
+    re.compile(r"\("): Bracket("()", is_head=True),
+    re.compile(r"\)"): Bracket("()"),
+    re.compile(r"\["): Bracket("[]", is_head=True),
+    re.compile(r"\]"): Bracket("[]"),
 }
 
 
 def parse_symbol(expression: str, pos: int):
     """解析表达式并返回解析后的结果"""
-    for pattern, op in symbols.items():
+    for pattern, op in sorted(
+        symbols.items(), key=lambda x: x[1].priority if isinstance(x[1], Operator) else -1, reverse=True
+    ):
         span = pattern.match(expression, pos=pos)
+        print(op)
         if span is None:
             continue
         return op, span
@@ -76,12 +80,12 @@ def preprocess(expression: str) -> list[Decimal | Operator]:
     stack: list[Operator | Bracket] = []
     preprocessed: list[Decimal | Operator] = []
 
-    expression = expression.replace(' ', '')
+    expression = expression.replace(" ", "")
     pos = 0
     while pos < len(expression):
         symbol, span = parse_symbol(expression, pos)
         if not isinstance(symbol, Symbol):
-            preprocessed.append(symbol(expression[span.start():span.end()]))
+            preprocessed.append(symbol(expression[span.start() : span.end()]))
         elif isinstance(symbol, Operator):
             while stack and isinstance(stack[-1], Operator) and stack[-1].priority >= symbol.priority:
                 preprocessed.append(stack[-1])
@@ -109,8 +113,8 @@ def calc_preprocessed(preprocessed: list[Decimal | Operator]):
         if isinstance(sign, Operator):
             if len(stack) < sign.count:
                 raise ValueError("表达式错误")
-            result = sign.calc(*stack[-sign.count:])
-            stack = stack[:-sign.count]
+            result = sign.calc(*stack[-sign.count :])
+            stack = stack[: -sign.count]
             stack.append(result)
         else:
             stack.append(sign)

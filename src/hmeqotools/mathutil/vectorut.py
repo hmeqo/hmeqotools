@@ -4,15 +4,13 @@ __all__ = [
     # Angle
     "Angle",
     "Angle3",
-
     # Vector
     "Vector",
     "Vector3",
-
     # Coordination and entity
     "relative_pos",
     "relative_pos3",
-    "Entity"
+    "Entity",
 ]
 
 import math as _math
@@ -29,7 +27,6 @@ def relative_pos3(coord, coord2):
 
 
 class _Vec1:
-
     x = 0.0
 
     def __init__(self, x=0.0):
@@ -62,7 +59,6 @@ class _Vec1:
 
 
 class _Vec2:
-
     x = 0.0
     y = 0.0
 
@@ -152,7 +148,6 @@ class _Vec2:
 
 
 class _Vec3:
-
     x = 0.0
     y = 0.0
     z = 0.0
@@ -251,7 +246,6 @@ class _Vec3:
 
 
 class Angle(_Vec1):
-
     _x = 0.0
 
     def vec(self, distance: float = 1):
@@ -268,12 +262,11 @@ class Angle(_Vec1):
     def x(self, value):
         value = value % 360
         if value >= 180:
-            value = -180 + value%180
+            value = -180 + value % 180
         self._x = value
 
 
 class Angle3(_Vec3):
-
     _x = 0.0
     _y = 0.0
     _z = 0.0
@@ -291,7 +284,7 @@ class Angle3(_Vec3):
     def x(self, value):
         value = value % 360
         if value >= 180:
-            value = -180 + value%180
+            value = -180 + value % 180
         self._x = value
 
     @property
@@ -302,7 +295,7 @@ class Angle3(_Vec3):
     def y(self, value):
         value = value % 360
         if value >= 180:
-            value = -180 + value%180
+            value = -180 + value % 180
         self._y = value
 
     @property
@@ -313,7 +306,7 @@ class Angle3(_Vec3):
     def z(self, value):
         value = value % 360
         if value >= 180:
-            value = -180 + value%180
+            value = -180 + value % 180
         self._z = value
 
 
@@ -345,7 +338,6 @@ class Vector3(_Vec3):
 
 
 class Entity:
-
     name = "Entity"
     enable = True
     visible = True

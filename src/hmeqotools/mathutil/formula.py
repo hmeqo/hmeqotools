@@ -19,23 +19,22 @@ from hmeqotools.mathutil import funcs as mfn
 console = Console()
 
 
-def _sort_list(lst, count, si=0):
+def _blend_list(lst, unit_size, start_index=0):
     """拌匀列表元素.
 
-    Arguments:
-        params (list): 列表
-        count (int): 多少元素视作一个单位，按照这个单位排序
-        si (int): 起始排序位置
+    :param lst: 列表
+    :param unit_size: 多少元素视作一个单位，按照这个单位排序
+    :param start_index: 起始排序位置
     """
     lst_len = len(lst)
-    sort_len = lst_len - si
+    sort_len = lst_len - start_index
     if sort_len > 2:
-        sort_len = lst_len - lst_len % count
+        sort_len = lst_len - lst_len % unit_size
         mid_index = sort_len // 2
-        mid_index = mid_index - mid_index % count + si
-        sort_len += si
-        for i, i2 in zip(range(si, mid_index, count * 2), range(sort_len, mid_index + 1, -count * 2)):
-            lst[i : i + count], lst[i2 - count : i2] = lst[i2 - count : i2], lst[i : i + count]
+        mid_index = mid_index - mid_index % unit_size + start_index
+        sort_len += start_index
+        for i, i2 in zip(range(start_index, mid_index, unit_size * 2), range(sort_len, mid_index + 1, -unit_size * 2)):
+            lst[i : i + unit_size], lst[i2 - unit_size : i2] = lst[i2 - unit_size : i2], lst[i : i + unit_size]
 
 
 class Pi:
@@ -103,14 +102,14 @@ class Pi:
                     params = [(i, result, (ftrs[i], ftrs[3 * i], ftrs[6 * i])) for i in range(iter_count)]
                     del ftrs
                     # 对参数排序，使进度条过渡更平滑
-                    _sort_list(params, cpu_count)
+                    _blend_list(params, cpu_count)
                     while params:
                         result += sum(pool.map(cls._ramanujan2, params[:count]))
                         progress.update(task1, advance=len(params[:count]))
                         del params[:count]
                 else:
                     params = [(i, result) for i in range(iter_count)]
-                    _sort_list(params, cpu_count)
+                    _blend_list(params, cpu_count)
                     while params:
                         result += sum(pool.map(cls._ramanujan, params[:count]))
                         progress.update(task1, advance=len(params[:count]))
@@ -239,7 +238,7 @@ class E:
                 count = 64 * cpu_count
 
                 params = [(one, i) for i in mfn.factorial_gen(p2)]
-                _sort_list(params, count)
+                _blend_list(params, count)
                 progress.update(task1, total=len(params))
                 while params:
                     result += sum(pool.map(cls._taylor, params[:count]))

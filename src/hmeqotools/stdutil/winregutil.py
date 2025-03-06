@@ -14,13 +14,11 @@ class Key:
 
 
 class HKEY_CLASSES_ROOT:
-
     HKEY = winreg.HKEY_CLASSES_ROOT
     FILE_MENU = Key(HKEY, r"*\shell")
 
 
 class HKEY_LOCAL_MACHINE:
-
     HKEY = winreg.HKEY_LOCAL_MACHINE
     DRIVERS = Key(HKEY, r"SYSTEM\MountedDevices")
     ENVIRONMENT = Key(HKEY, r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment")
@@ -28,7 +26,6 @@ class HKEY_LOCAL_MACHINE:
 
 
 class HKEY_CURRENT_USER(Key):
-
     HKEY = winreg.HKEY_CURRENT_USER
     SHELL_FOLDER = Key(HKEY, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders")
     RUN = Key(HKEY, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Run")
@@ -44,7 +41,7 @@ def get_drives():
         while True:
             name = winreg.EnumValue(key, index)[0]
             if name.startswith(prefix):
-                mount = name[len(prefix):] + os.sep
+                mount = name[len(prefix) :] + os.sep
                 if os.path.exists(mount):
                     drives.append(mount)
             index += 1

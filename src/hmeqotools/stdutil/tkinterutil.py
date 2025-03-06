@@ -5,9 +5,9 @@ import traceback
 
 def on_error(exc: Exception):
     print(
-        "--------------------------------------------------\n" +
-        "".join(traceback.format_exception(type(exc), exc, exc.__traceback__)) +
-        "--------------------------------------------------"
+        "--------------------------------------------------\n"
+        + "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
+        + "--------------------------------------------------"
     )
 
 
@@ -165,6 +165,7 @@ class WidgetMethods:
 
 class MouseMessage:
     """鼠标事件绑定"""
+
     def __init__(self, widget):
         self.mouse_status_over = False
         self.mouse_status_left = False
@@ -311,6 +312,7 @@ class MouseMessage:
 
 class KeyboardMessage:
     """键盘事件绑定"""
+
     def __init__(self, widget: tk.Misc):
         self._held_key = {}
         self.keyboard_event = None
@@ -552,6 +554,7 @@ def main():
 
     class MyWindow(Window, KeyboardMessage):
         """Inherit Window."""
+
         def __init__(self):
             super().__init__(size=(800, 500))
             self.f = tk.Frame(self.tk)

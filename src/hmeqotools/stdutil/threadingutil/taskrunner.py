@@ -9,9 +9,9 @@ from typing import Any, Callable, Iterable, TypeVar, overload
 
 def on_error(exc: Exception):
     print(
-        "--------------------------------------------------\n" +
-        "".join(traceback.format_exception(type(exc), exc, exc.__traceback__)) +
-        "\n--------------------------------------------------"
+        "--------------------------------------------------\n"
+        + "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
+        + "\n--------------------------------------------------"
     )
 
 
@@ -74,6 +74,7 @@ class TaskRunner:
     tr.join()
     ```
     """
+
     def __init__(self):
         self.queue: queue.Queue[Callable | None] = queue.Queue()
         self.thr = threading.Thread(target=self.mainloop, daemon=True)
@@ -125,6 +126,7 @@ class TaskRunner:
 
     def put(self, func: Callable[[], Any]):
         """Put a callable to queue."""
+
         def wrapper():
             try:
                 func()
@@ -145,15 +147,15 @@ class TaskRunner:
         self.queue.put(task)
         return task
 
-    Handler = TypeVar('Handler', bound=Task)
+    Handler = TypeVar("Handler", bound=Task)
 
     @overload
-    def submitter(self, *, default=None, handler: type[Handler] = Task) -> Callable[[Callable], Callable[..., Handler]]:
-        ...
+    def submitter(
+        self, *, default=None, handler: type[Handler] = Task
+    ) -> Callable[[Callable], Callable[..., Handler]]: ...
 
     @overload
-    def submitter(self, func: Callable, *, default=None, handler: type[Handler] = Task) -> Callable[..., Handler]:
-        ...
+    def submitter(self, func: Callable, *, default=None, handler: type[Handler] = Task) -> Callable[..., Handler]: ...
 
     def submitter(self, func=None, *, default=None, handler=Task) -> Any:
         """A decorator of `.run`."""

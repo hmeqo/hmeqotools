@@ -28,9 +28,9 @@ if sys.platform == "win32":
         ipv6 = ""
         for i, line in enumerate(output):
             if "IPv4" in line and output[i + 2][-2] != " ":
-                ipv4 = line[line.find(":") + 2:-1]
+                ipv4 = line[line.find(":") + 2 : -1]
             elif "IPv6" in line and output[i + 3][-2] != " ":
-                ipv6 = line[line.find(":") + 2:-1]
+                ipv6 = line[line.find(":") + 2 : -1]
         return ipv4, ipv6
 
 

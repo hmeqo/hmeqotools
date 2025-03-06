@@ -2,7 +2,7 @@ def predict_digits(bit_digits: int) -> int:
     """预测二进制长度对应的十进制长度"""
     w = 0.3010281762263712
     b = 0.5015807678542549
-    y = w*bit_digits + b
+    y = w * bit_digits + b
     return round(y)
 
 

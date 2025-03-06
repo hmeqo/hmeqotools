@@ -6,4 +6,4 @@ def pad(b: bytes, block_size: int):
 
 def unpad(b: bytes):
     """unpadding bytes"""
-    return b[:-ord(b[-1:])]
+    return b[: -ord(b[-1:])]

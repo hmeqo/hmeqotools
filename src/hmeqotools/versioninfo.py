@@ -11,7 +11,7 @@ class VersionInfo:
         minor=0,
         micro=0,
         build=0,
-        release: str = 'release',
+        release: str = "release",
         date: datetime.date | None = None,
     ):
         self.major = major
@@ -26,15 +26,15 @@ class VersionInfo:
 
     @property
     def version(self):
-        return f'{self.major}.{self.minor}.{self.micro}'
+        return f"{self.major}.{self.minor}.{self.micro}"
 
     @property
     def full_version(self):
-        return f'{self.version}.{self.build}'
+        return f"{self.version}.{self.build}"
 
     @property
     def release_version(self):
-        return f'{self.version} {self.release} {self.build}'
+        return f"{self.version} {self.release} {self.build}"
 
 
 if __name__ == "__main__":

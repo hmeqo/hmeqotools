@@ -94,7 +94,7 @@ class RSA:
         i = start
         while len(results) < k:
             i += 1
-            d = (i*fy + 1) / e
+            d = (i * fy + 1) / e
             d_int = int(d)
             if d == d_int and d_int not in results:
                 results.append(d_int)
@@ -115,7 +115,7 @@ class RSA:
             decimal.getcontext().prec = predict.predict_digits(digits)
             digits = decimal.Decimal(str(digits)) / pq_count
             # 填补分多个素数合成带来的误差
-            pos = 2**(decimal.Decimal(str(pq_count)) - 1) / pq_count
+            pos = 2 ** (decimal.Decimal(str(pq_count)) - 1) / pq_count
         # 素数范围
         range_b = 2**digits
         range_a = range_b // 2 * pos

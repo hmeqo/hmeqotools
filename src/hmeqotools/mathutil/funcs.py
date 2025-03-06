@@ -58,14 +58,174 @@ dec_2 = decimal.Decimal(2)
 
 # 一千以内所有素数
 prime_list_k = (
-    2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109,
-    113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239,
-    241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379,
-    383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521,
-    523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661,
-    673, 677, 683, 691, 701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809, 811, 821, 823, 827,
-    829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991,
-    997
+    2,
+    3,
+    5,
+    7,
+    11,
+    13,
+    17,
+    19,
+    23,
+    29,
+    31,
+    37,
+    41,
+    43,
+    47,
+    53,
+    59,
+    61,
+    67,
+    71,
+    73,
+    79,
+    83,
+    89,
+    97,
+    101,
+    103,
+    107,
+    109,
+    113,
+    127,
+    131,
+    137,
+    139,
+    149,
+    151,
+    157,
+    163,
+    167,
+    173,
+    179,
+    181,
+    191,
+    193,
+    197,
+    199,
+    211,
+    223,
+    227,
+    229,
+    233,
+    239,
+    241,
+    251,
+    257,
+    263,
+    269,
+    271,
+    277,
+    281,
+    283,
+    293,
+    307,
+    311,
+    313,
+    317,
+    331,
+    337,
+    347,
+    349,
+    353,
+    359,
+    367,
+    373,
+    379,
+    383,
+    389,
+    397,
+    401,
+    409,
+    419,
+    421,
+    431,
+    433,
+    439,
+    443,
+    449,
+    457,
+    461,
+    463,
+    467,
+    479,
+    487,
+    491,
+    499,
+    503,
+    509,
+    521,
+    523,
+    541,
+    547,
+    557,
+    563,
+    569,
+    571,
+    577,
+    587,
+    593,
+    599,
+    601,
+    607,
+    613,
+    617,
+    619,
+    631,
+    641,
+    643,
+    647,
+    653,
+    659,
+    661,
+    673,
+    677,
+    683,
+    691,
+    701,
+    709,
+    719,
+    727,
+    733,
+    739,
+    743,
+    751,
+    757,
+    761,
+    769,
+    773,
+    787,
+    797,
+    809,
+    811,
+    821,
+    823,
+    827,
+    829,
+    839,
+    853,
+    857,
+    859,
+    863,
+    877,
+    881,
+    883,
+    887,
+    907,
+    911,
+    919,
+    929,
+    937,
+    941,
+    947,
+    953,
+    967,
+    971,
+    977,
+    983,
+    991,
+    997,
 )
 
 prime_set_k = set(prime_list_k)
@@ -97,13 +257,11 @@ def pow(n, e: int):
 
 
 @overload
-def powmod(n: int, e: int, m: int) -> int:
-    ...
+def powmod(n: int, e: int, m: int) -> int: ...
 
 
 @overload
-def powmod(n: float, e: int, m: float) -> float:
-    ...
+def powmod(n: float, e: int, m: float) -> float: ...
 
 
 def powmod(n, e, m):
@@ -135,7 +293,7 @@ def enrt(func, n, exponent: Union[int, float] = 2, *args, **kwargs):
     if n_is_neg:
         # 如果指数是小数或是偶数，则涉及复数计算
         if isinstance(exponent, float) or not exponent & 1:
-            return complex(n)**(1 / complex(exponent))
+            return complex(n) ** (1 / complex(exponent))
         # 先取正数，最后再改回负数
         else:
             n = abs(n)
@@ -174,7 +332,7 @@ def dichotomy_root(n, exponent: Any = 2):
     result = 0
     while result != a:
         a = result
-        result = (low+high) / 2
+        result = (low + high) / 2
         b = result**exponent
         if b > n:
             high = result
@@ -183,26 +341,30 @@ def dichotomy_root(n, exponent: Any = 2):
     return result
 
 
-def factorial(n: int, double=False):
-    """阶乘, 可计算双阶乘."""
+def factorial(n: int):
+    """阶乘"""
     result = 1
-    if not double:
-        # 计算 n 整除和取余 2 的值
-        # 如果没有余数, result 乘以 n 减一的双阶乘
-        # 如果有余数, result 乘以 n 的双阶乘
-        # 将 n 整除 2 的结果赋值给 n
-        # result 乘以 2 的 n 次方
-        # 不断循环以上步骤, 直到 n 等于 1
-        pw2 = 0
-        while n > 1:
-            a = divmod(n, 2)
-            result *= factorial(n if a[1] else n - 1, True)
-            n = a[0]
-            pw2 += n
-        result <<= pw2
-    else:
-        for i in range(n, 1, -2):
-            result *= i
+    # 计算 n 整除和取余 2 的值
+    # 如果没有余数, result 乘以 n 减一的双阶乘
+    # 如果有余数, result 乘以 n 的双阶乘
+    # 将 n 整除 2 的结果赋值给 n
+    # result 乘以 2 的 n 次方
+    # 不断循环以上步骤, 直到 n 等于 1
+    pw2 = 0
+    while n > 1:
+        a = divmod(n, 2)
+        result *= double_factorial(n if a[1] else n - 1)
+        n = a[0]
+        pw2 += n
+    result <<= pw2
+    return result
+
+
+def double_factorial(n: int):
+    """双阶乘"""
+    result = 1
+    for i in range(n, 1, -2):
+        result *= i
     return result
 
 
@@ -219,7 +381,7 @@ def factorial_stirling(n):
     斯特林公式: 取 n 的阶乘的近似值的数学公式.
     """
     n = decimal.Decimal(str(n))
-    return round(root(dec_2 * dec_pi * n) * (n / dec_e)**n)
+    return round(root(dec_2 * dec_pi * n) * (n / dec_e) ** n)
 
 
 def prime(n: int, stop=None):
@@ -267,8 +429,8 @@ def primes(n: int):
     sieve = [True] * half_n
     for i in range(3, int(n**0.5) + 1, 2):
         if sieve[i // 2]:
-            sieve[i * i // 2::i] = [False] * ((n - i*i - 1) // (2*i) + 1)
-    return [2] + [2*i + 1 for i in range(1, half_n) if sieve[i]]
+            sieve[i * i // 2 :: i] = [False] * ((n - i * i - 1) // (2 * i) + 1)
+    return [2] + [2 * i + 1 for i in range(1, half_n) if sieve[i]]
 
 
 def prime_miller_rabin(num: int):
@@ -336,7 +498,7 @@ def gcd_ext_euclid(a, b):
     x, y, q = 1, 0, a
     while lst:
         a, b = lst.pop()
-        x, y = y, x - (a//b) * y
+        x, y = y, x - (a // b) * y
     return x, y, q
 
 
@@ -378,7 +540,7 @@ def sin2(x, angle=False):
         i += 2
         sign *= -1
         x_e *= x * x
-        j *= i * (i-1)
+        j *= i * (i - 1)
         f = sign * x_e / j
         result += f
     return result
@@ -387,7 +549,7 @@ def sin2(x, angle=False):
 def cos2(x, angle=False):
     if angle:
         x = x * pi / 180
-    result = pi/2 - x
+    result = pi / 2 - x
     sign = 1
     x_e = x
     j = 1
@@ -397,7 +559,7 @@ def cos2(x, angle=False):
         i += 2
         sign *= -1
         x_e *= x * x
-        j *= i * (i-1)
+        j *= i * (i - 1)
         f = sign * x_e / j
         result += f
     return result
@@ -427,7 +589,7 @@ def binomial_theorem(x, y, n=2):
     """二项式定理 $(x+y)^n$"""
     fac_n = factorial(n)
     return sum(
-        fac_n / (k_fac * factorial(n - k)) * x**(n - k) * y**(k)
+        fac_n / (k_fac * factorial(n - k)) * x ** (n - k) * y ** (k)
         for k_fac, k in zip(factorial_gen(n + 1), range(n + 1))
     )
 
