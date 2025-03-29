@@ -145,7 +145,7 @@ class Pi:
             console=console,
             transient=False,
         ) as progress:
-            task1 = progress.add_task("马青公式", total=None)
+            task1 = progress.add_task("Machin", total=None)
             console.log("初始化变量...")
             # 多计算k位，防止尾数取舍的影响
             k = cls.k + len(str(precision)) + 1
